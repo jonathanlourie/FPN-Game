@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class Door : InteractiveObject
 {
-
     [SerializeField]
-    private InventoryObject key;
+    private InventoryObject[] key;
+
 
     //[SerializeField]
     private bool isLocked = false;
@@ -27,20 +27,20 @@ public class Door : InteractiveObject
     {
         get
         {
-            if(isLocked)
+            if (isLocked)
             {
 
 
-                if(!HasKey)
-                return $"{lockedText} {displayText}"; // return will exit out of the getter property as soon as it return
+                if (!HasKey)
+                    return $"{lockedText} {displayText}"; // return will exit out of the getter property as soon as it return
 
                 else
                 {
-                    return $"use the {key.ObjectName}";
+                    return $"use the {key[0].ObjectName}";
                 }
 
             }
-            if(isOpen)
+            if (isOpen)
             {
                 return $"Close {displayText}";
             }
@@ -48,12 +48,15 @@ public class Door : InteractiveObject
             {
                 return $"Open {displayText}";
             }
-            
+
         }
 
     }
 
-    private bool HasKey => PlayerInventory.InventoryObjects.Contains(key); //has key property is a fancy bool variable that checks if the playerinventory has has key 
+    private bool HasKey => PlayerInventory.InventoryObjects.Contains(key[0]); //has key property is a fancy bool variable that checks if the playerinventory has has key 
+    private bool HasKeyTwo => PlayerInventory.InventoryObjects.Contains(key[1]);
+    private bool HasKeyThree => PlayerInventory.InventoryObjects.Contains(key[2]);
+   
 
     protected override void Start()
     {
@@ -64,6 +67,8 @@ public class Door : InteractiveObject
 
         InitializeIsLocked();
 
+       
+
 
     }
 
@@ -71,21 +76,24 @@ public class Door : InteractiveObject
     private void InitializeIsLocked() //if there is a key attached to this door object we will start the door off as being locked 
     {
         if (key != null)
+        {
             isLocked = true;
+        }
+      
     }
 
     public override void InteractWith()
     {
        
 
-        if (isLocked && !HasKey)
+        if (isLocked && !HasKey || !HasKeyTwo || !HasKeyThree)
         {
             animator.SetTrigger("playShake");
             audioSource.clip = lockedClip;
         }
         else
         {
-            if (isLocked && HasKey)
+            if (isLocked && key != null )
             isLocked = false;
 
         
